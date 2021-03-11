@@ -124,5 +124,5 @@ dmypy.json
 .history
 .ionide
 
-results/csvs/
-results/graphs/
+results/csvs
+results/graphs
