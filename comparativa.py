@@ -7,13 +7,13 @@ import pandas as pd
 
 # Lectura de datos con Pandas
 # Datos Sonidos del Cielo
-data_sdc = pd.read_csv('results\sdc_meteorspd.csv')
+data_sdc = pd.read_csv('results\csvs\sdc_meteorspd.csv')
 data_sdc['date'] = pd.to_datetime(data_sdc['date'])
 data_sdc.sort_values('date', inplace=True) #ordena los datos por fecha
 dates_sdc = data_sdc['date']
 mets_sdc = data_sdc['meteors']
 # Datos IMO
-data_imo = pd.read_csv('results\imo_meteorspd.csv')
+data_imo = pd.read_csv('results\csvs\imo_meteorspd.csv')
 data_imo['Date'] = pd.to_datetime(data_imo['Date']) #convierte str a formato date
 data_imo.sort_values('Date', inplace=True) #ordena los datos por fecha
 dates_imo = data_imo['Date']
@@ -39,4 +39,4 @@ plt.ylabel("Nº meteoros")
 plt.legend() #Añade las labels indicadas en plot_date como leyenda
 
 # Exportar png
-plt.savefig('results\comparativa_detecciones_diarias.png', dpi = 75)
+plt.savefig('results\graphs\comparativa_detecciones_diarias.png', dpi = 75)

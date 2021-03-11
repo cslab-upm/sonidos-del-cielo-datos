@@ -19,4 +19,4 @@ data = data[['date','meteors']]
 data.drop_duplicates(subset ='date', inplace = True)
 
 # Guarda como csv
-data.to_csv('results\sdc_meteorspd.csv', index=False)
+data.to_csv('results\csvs\sdc_meteorspd.csv', index=False)
