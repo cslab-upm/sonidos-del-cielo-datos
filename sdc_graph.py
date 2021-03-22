@@ -3,11 +3,11 @@ from matplotlib import dates as mpl_dates
 import pandas as pd
 
 # Lectura de datos con Pandas
-data = pd.read_csv('results\sdc_meteorspd.csv')
-data['Date'] = pd.to_datetime(data['Date'])
-data.sort_values('Date', inplace=True) #ordena los datos por fecha
-dates = data['Date']
-mets = data['Meteors']
+data = pd.read_csv('results\csvs\sdc_clear_daily.csv')
+data['date'] = pd.to_datetime(data['date'])
+data.sort_values('date', inplace=True) #ordena los datos por fecha
+dates = data['date']
+mets = data['meteors']
 
 # Características del gráfico
 plt.style.use('seaborn-deep') #estilo
@@ -26,4 +26,4 @@ plt.xlabel("Fechas")
 plt.ylabel("Nº meteoros")
 
 # Exportar png
-plt.savefig('results\sdc_gráfico_deteccionesdiarias.png', dpi = 75)
+plt.savefig('results\graphs\sdc_gráfico_deteccionesdiarias.png', dpi = 75)

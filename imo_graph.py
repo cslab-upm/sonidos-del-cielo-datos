@@ -3,7 +3,7 @@ from matplotlib import dates as mpl_dates
 import pandas as pd
 
 # Lectura y acondicionamiento de datos con Pandas
-data = pd.read_csv('results\imo_meteorspd.csv')
+data = pd.read_csv('results\csvs\imo_meteorspd.csv')
 data['Date'] = pd.to_datetime(data['Date']) #convierte str a formato date
 data.sort_values('Date', inplace=True) #ordena los datos por fecha
 dates = data['Date']
@@ -26,4 +26,4 @@ plt.xlabel("Fechas")
 plt.ylabel("Nº meteoros")
 
 # Exportar png
-plt.savefig('results\imo_gráfico_deteccionesdiarias.png', dpi = 75)
+plt.savefig('results\graphs\imo_gráfico_deteccionesdiarias.png', dpi = 75)
