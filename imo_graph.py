@@ -4,10 +4,10 @@ import pandas as pd
 
 # Lectura y acondicionamiento de datos con Pandas
 data = pd.read_csv('results\csvs\imo_meteorspd.csv')
-data['Date'] = pd.to_datetime(data['Date']) #convierte str a formato date
-data.sort_values('Date', inplace=True) #ordena los datos por fecha
-dates = data['Date']
-mets = data['Meteors']
+data['date'] = pd.to_datetime(data['date']) #convierte str a formato date
+data.sort_values('date', inplace=True) #ordena los datos por fecha
+dates = data['date']
+mets = data['meteors']
 
 # Características del gráfico
 plt.style.use('seaborn-deep') #estilo

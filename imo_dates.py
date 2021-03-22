@@ -1,31 +1,26 @@
-import csv
+import pandas as pd
 
-imo_meteor_per_day = dict() #fecha -> nº detecciones
+# Lectura de datos con pandas
+data = pd.read_csv('data\imo_data1.csv', sep=';')
 
-# Guardar todas las fechas de sesiones y las detecciones de la sesión en un csv temp
-with open('data\imo_data1.csv', 'r') as imo_data:
-    csv_reader = csv.DictReader(imo_data, delimiter=';')
+# Renombrar la columna "Start Date" para evitar errores
+data['date'] = data['Start Date']
 
-    with open('results\csvs\imo_data_mod.csv', 'w', newline='') as imo_tmp:
-        fieldnames = ['date', 'meteors']
-        csv_writer = csv.DictWriter(imo_tmp, fieldnames=fieldnames, delimiter=',')
+# Eliminar la hora
+data['date'] = pd.DatetimeIndex(data.date).normalize()
 
-        csv_writer.writeheader()
+# Ordena los datos por fecha
+data.sort_values('date', inplace=True)
 
-        for line in csv_reader:
-            csv_writer.writerow({'date': line['Start Date'][:10], 'meteors': line['Number']})
-        
-        # Re-abrir imo_tmp para lectura
-        with open('results\csvs\imo_data_mod.csv', 'r') as imo_tmp:
-            csv_reader = csv.DictReader(imo_tmp, delimiter=',')
+# Suma Number para cada fecha y deja una sola fila por fecha
+data['meteors'] = data.groupby('date')['Number'].transform('sum')
+data.drop_duplicates(subset=['date'], inplace=True)
 
-            # Almacenar diccionario día - detecciones/día
-            for line in csv_reader:
-                # += detecciones
-                imo_meteor_per_day[line['date']] = imo_meteor_per_day.get(line['date'], 0) + int(line['meteors'])
-            
-            # Almacena resultados en csv final
-            with open('results\csvs\imo_meteorspd.csv', 'w') as imo_pd:
-                imo_pd.write("Date,Meteors")
-                for key in imo_meteor_per_day.keys():
-                    imo_pd.write("\n%s,%s"%(key, imo_meteor_per_day[key]))
+# Elimina columnas innecesarias del dataframe
+data = data[['date','meteors']]
+
+# Elimina duplicados
+data.drop_duplicates(subset ='date', inplace = True)
+
+# Guarda como csv
+data.to_csv('results\csvs\imo_meteorspd.csv', index=False)
