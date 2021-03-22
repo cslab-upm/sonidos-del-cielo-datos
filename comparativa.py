@@ -7,17 +7,17 @@ import pandas as pd
 
 # Lectura de datos con Pandas
 # Datos Sonidos del Cielo
-data_sdc = pd.read_csv('results\csvs\sdc_meteorspd.csv')
+data_sdc = pd.read_csv('results\csvs\sdc_clear_daily.csv')
 data_sdc['date'] = pd.to_datetime(data_sdc['date'])
 data_sdc.sort_values('date', inplace=True) #ordena los datos por fecha
 dates_sdc = data_sdc['date']
 mets_sdc = data_sdc['meteors']
 # Datos IMO
 data_imo = pd.read_csv('results\csvs\imo_meteorspd.csv')
-data_imo['Date'] = pd.to_datetime(data_imo['Date']) #convierte str a formato date
-data_imo.sort_values('Date', inplace=True) #ordena los datos por fecha
-dates_imo = data_imo['Date']
-mets_imo = data_imo['Meteors']
+data_imo['date'] = pd.to_datetime(data_imo['date']) #convierte str a formato date
+data_imo.sort_values('date', inplace=True) #ordena los datos por fecha
+dates_imo = data_imo['date']
+mets_imo = data_imo['meteors']
 
 # Características del gráfico
 plt.style.use('ggplot') #estilo
