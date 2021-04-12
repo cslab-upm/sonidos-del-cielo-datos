@@ -18,3 +18,15 @@ Los cambios que se produzcan en el proyecto se documentarán aquí.
 ### Modified
 - sdc_dates.py: utiliza el csv daily
 - imo_dates.py: mejora en eficiencia mediante uso de la librería pandas
+
+## 2021-04-11
+### Added
+- imo_dates_average.py: genera un csv con la media de meteoros detectados por estación cada día
+
+## 2021-04-12
+### Removed
+- imo_graph.py
+- sdc_graph.py
+- comparativa.py
+### Added
+- graphs.py: funcionalidad de los programas que generaban gráficos condensada en un solo programa + implementación de POO y funciones
