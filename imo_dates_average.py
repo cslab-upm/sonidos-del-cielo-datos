@@ -24,6 +24,14 @@ df['avg mets per station'] = df['total meteors'] / df['stations'] # Media de met
 
 df = df[['date','stations','total meteors','avg mets per station']] # Reordenar
 
+# Rellenar fechas que faltan con 0
+ind = pd.date_range(min(df['date']), max(df['date'])) # serie que cubre todas las fechas en el rango disponible
+df.set_index('date', inplace=True) # index = columna date
+df = df[~df.index.duplicated()] # eliminar duplicados
+df = df.reindex(ind, fill_value=0) # rellenar con 0 fechas sin datos
+df = df.reset_index()
+df['date'] = df['index']
+df = df[['date','stations','total meteors','avg mets per station']]
 
 # Exporta como csv
 df.to_csv('results\csvs\imo_meteors_average.csv', index=False)

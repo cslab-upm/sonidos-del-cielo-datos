@@ -73,6 +73,14 @@ df['date'] = pd.to_datetime(df['date'], format='%d-%m-%Y')
 # Eliminar líneas sin datos de meteoros
 df.dropna(inplace=True)
 
+# Rellenar fechas que faltan con 0
+ind = pd.date_range(min(df['date']), max(df['date'])) # serie que cubre todas las fechas en el rango disponible
+df.set_index('date', inplace=True) # index = columna date
+df = df[~df.index.duplicated()] # eliminar duplicados
+df = df.reindex(ind, fill_value=0) # rellenar con 0 fechas sin datos
+df = df.reset_index()
+df['date'] = df['index']
+df = df[['date','meteors']]
+
 # Exportar
 df.to_csv('results\csvs\sdc_clear_daily.csv', index=False)
-print(df.head(10))

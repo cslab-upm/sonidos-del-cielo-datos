@@ -95,6 +95,6 @@ def create_comparative_graph(csv1, csv2, style = 'seaborn-deep', title='Deteccio
 # create_metspd_graph(imo)
 
 # Test - Comparativa SdC vs IMO
-sdc = Metspd_csv(name='sdc_clear_daily')
-imo = Metspd_csv(name='imo_meteors_average', mets_col_name='avg mets per station')
-create_comparative_graph(sdc,imo)
+# sdc = Metspd_csv(name='sdc_clear_daily')
+# imo = Metspd_csv(name='imo_meteors_average', mets_col_name='avg mets per station')
+# create_comparative_graph(sdc,imo)
