@@ -30,3 +30,8 @@ Los cambios que se produzcan en el proyecto se documentarán aquí.
 - comparativa.py
 ### Added
 - graphs.py: funcionalidad de los programas que generaban gráficos condensada en un solo programa + implementación de POO y funciones
+
+## 2021-04-24
+### Modified
+- Ahora los csvs con las detecciones diarias incluyen las fechas sin detecciones con un valor de 0.
+- Representación por años
