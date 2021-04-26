@@ -50,4 +50,3 @@ if __name__ == '__main__':
     test_comp_alltimes()
     test_comp_2019()
     test_comp_2020()
-
