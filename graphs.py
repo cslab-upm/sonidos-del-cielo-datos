@@ -1,38 +1,53 @@
 import mylibrary as ml
 
+# Create pandas dataframes from daily meteors csv file
+sdc = ml.Metspd_csv(name='sdc_clear_daily')
+imo = ml.Metspd_csv(name='imo_meteors_average', mets_col_name='avg mets per station')
 
-# Test - Sonidos del Cielo
-# Todos los datos
-# sdc = ml.Metspd_csv(name='sdc_clear_daily')
-# ml.create_metspd_graph(sdc)
-# Año 2019
-# sdc = Metspd_csv(name='sdc_clear_daily')
-# create_metspd_graph(sdc, year='2019')
-# Año 2020
-# sdc = Metspd_csv(name='sdc_clear_daily')
-# create_metspd_graph(sdc, year='2020')
+def test_sdc_alltimes():
+    ml.create_metspd_graph(sdc)
+    ml.plt.clf()
 
-# Test - IMO
-# Todos los datos
-# imo = Metspd_csv(name='imo_meteors_average', mets_col_name='avg mets per station')
-# create_metspd_graph(imo)
-# Año 2019
-# imo = Metspd_csv(name='imo_meteors_average', mets_col_name='avg mets per station')
-# create_metspd_graph(imo,year='2019')
-# Año 2020
-# imo = Metspd_csv(name='imo_meteors_average', mets_col_name='avg mets per station')
-# create_metspd_graph(imo,year='2020')
+def test_sdc_2019():
+    ml.create_metspd_graph(sdc, year='2019')
+    ml.plt.clf()
 
-# Test - Comparativa SdC vs IMO
-# Todos los datos
-# sdc = Metspd_csv(name='sdc_clear_daily')
-# imo = Metspd_csv(name='imo_meteors_average', mets_col_name='avg mets per station')
-# create_comparative_graph(sdc,imo)
-# Año 2019
-# sdc = Metspd_csv(name='sdc_clear_daily')
-# imo = Metspd_csv(name='imo_meteors_average', mets_col_name='avg mets per station')
-# create_comparative_graph(sdc,imo,year='2019')
-# Año 2020
-# sdc = Metspd_csv(name='sdc_clear_daily')
-# imo = Metspd_csv(name='imo_meteors_average', mets_col_name='avg mets per station')
-# create_comparative_graph(sdc,imo,year='2020')
+def test_sdc_2020():
+    ml.create_metspd_graph(sdc, year='2020')
+    ml.plt.clf()
+
+def test_imo_alltimes():
+    ml.create_metspd_graph(imo)
+    ml.plt.clf()
+
+def test_imo_2019():
+    ml.create_metspd_graph(imo,year='2019')
+    ml.plt.clf()
+
+def test_imo_2020():
+    ml.create_metspd_graph(imo,year='2020')
+    ml.plt.clf()
+
+def test_comp_alltimes():
+    ml.create_comparative_graph(sdc,imo)
+    ml.plt.clf()
+
+def test_comp_2019():
+    ml.create_comparative_graph(sdc,imo,year='2019')
+    ml.plt.clf()
+
+def test_comp_2020():
+    ml.create_comparative_graph(sdc,imo,year='2020')
+    ml.plt.clf()
+
+if __name__ == '__main__':
+    test_sdc_alltimes()
+    test_sdc_2019()
+    test_sdc_2020()
+    test_imo_alltimes()
+    test_imo_2019()
+    test_imo_2020()
+    test_comp_alltimes()
+    test_comp_2019()
+    test_comp_2020()
+
