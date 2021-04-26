@@ -92,3 +92,13 @@ def create_comparative_graph(csv1, csv2, style = 'seaborn-deep', title='Deteccio
     plt.legend()
     
     plt.savefig('results\graphs\comparativa_detecciones_diarias_' + year + '.png', dpi = 75)
+
+def top_x_percent(csv, percentage):
+    df = pd.read_csv(csv.path)
+    length = len(df.index)
+    if 'meteors' in df.columns:
+        print(df.nlargest(round((percentage*length)/100), ['meteors'])[['date','meteors']])
+    elif 'avg mets per station' in df.columns:
+        print(df.nlargest(round((percentage*length)/100), ['avg mets per station'])[['date','avg mets per station']])
+    else:
+        print("error")
