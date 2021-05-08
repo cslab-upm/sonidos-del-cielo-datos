@@ -102,3 +102,22 @@ def top_x_percent(csv, percentage):
         print(df.nlargest(round((percentage*length)/100), ['avg mets per station'])[['date','avg mets per station']])
     else:
         print("error")
+
+def create_monthly_graph(csv, style = 'seaborn-deep', year='all times'):
+    """Creates a graph with monthly meteor detections"""
+    # Lectura y acondicionamiento de datos con Pandas
+    dates, mets = read_mets_data(csv, year)
+
+    # Características del gráfico
+    style_date_plot(dates,mets,style)
+
+    # Etiquetas y exportar
+    plt.xlabel("Mes")
+    plt.ylabel("Nº meteoros")
+
+    if 'imo' in csv.path:
+        plt.title("Detecciones diarias - IMO - " + year)
+        plt.savefig('results\graphs\imo_gráfico_deteccionesmensuales_' + year + '.png', dpi=75)
+    else:
+        plt.title("Detecciones diarias - Sonidos del Cielo - " + year)
+        plt.savefig('results\graphs\sdc_gráfico_deteccionesmensuales_' + year + '.png', dpi=75)
