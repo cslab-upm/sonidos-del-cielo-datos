@@ -93,13 +93,44 @@ def create_comparative_graph(csv1, csv2, style = 'seaborn-deep', title='Deteccio
     
     plt.savefig('results\graphs\comparativa_detecciones_diarias_' + year + '.png', dpi = 75)
 
-def top_x_percent(csv, percentage):
-    df = pd.read_csv(csv.path)
+def top_x_percent(csv, percentage, year):
+    data = pd.read_csv(csv.path)
+
+    start_date = year + '-01-01'
+    end_date = year + '-12-31'
+
+    after_start_date = data['date'] >= start_date
+    before_end_date = data["date"] <= end_date
+    between_two_dates = after_start_date & before_end_date
+
+    df = data.loc[between_two_dates]
+
     length = len(df.index)
     if 'meteors' in df.columns:
         print(df.nlargest(round((percentage*length)/100), ['meteors'])[['date','meteors']])
     elif 'avg mets per station' in df.columns:
         print(df.nlargest(round((percentage*length)/100), ['avg mets per station'])[['date','avg mets per station']])
+    else:
+        print("error")
+
+def top_x_months(csv, months, year):
+    data = pd.read_csv(csv.path)
+    data['date'] = pd.to_datetime(data['date']) #convierte str a formato date
+    data.sort_values('date', inplace=True) #ordena los datos por fecha
+
+    start_date = year + '-01-01'
+    end_date = year + '-12-31'
+
+    after_start_date = data['date'] >= start_date
+    before_end_date = data["date"] <= end_date
+    between_two_dates = after_start_date & before_end_date
+
+    df = data.loc[between_two_dates]
+
+    if 'meteors' in df.columns:
+        print(df.nlargest(months, ['meteors'])[['date','meteors']])
+    elif 'avg mets per station' in df.columns:
+        print(df.nlargest(months, ['avg mets per station'])[['date','avg mets per station']])
     else:
         print("error")
 
