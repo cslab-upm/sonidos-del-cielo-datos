@@ -35,3 +35,10 @@ df = df[['date','stations','total meteors','avg mets per station']]
 
 # Exporta como csv
 df.to_csv('results\csvs\imo_meteors_average.csv', index=False)
+
+# Resultado por mes
+df_month = df
+df_month.index = pd.to_datetime(df_month['date'])
+df_month = df_month.groupby(pd.Grouper(freq='M')).sum()
+df_month.index = df_month.index.strftime('%m/%Y')
+df_month.to_csv('results\csvs\imo_meteors_average_monthly.csv')

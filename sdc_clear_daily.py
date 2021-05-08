@@ -84,3 +84,10 @@ df = df[['date','meteors']]
 
 # Exportar
 df.to_csv('results\csvs\sdc_clear_daily.csv', index=False)
+
+# Resultado por mes
+df_month = df
+df_month.index = pd.to_datetime(df_month['date'])
+df_month = df_month.groupby(pd.Grouper(freq='M')).sum()
+df_month.index = df_month.index.strftime('%m/%Y')
+df_month.to_csv('results\csvs\sdc_meteors_monthly.csv')
