@@ -134,6 +134,35 @@ def top_x_months(csv, months, year):
     else:
         print("error")
 
+def top_n_days_month(csv, n, year):
+    data = pd.read_csv(csv.path)
+    data['date'] = pd.to_datetime(data['date'])
+    data.sort_values('date', inplace=True) #ordena los datos por fecha
+
+    start_date = year + '-01-01'
+    end_date = year + '-12-31'
+
+    after_start_date = data['date'] >= start_date
+    before_end_date = data["date"] <= end_date
+    between_two_dates = after_start_date & before_end_date
+
+    df = data.loc[between_two_dates]
+
+    if 'meteors' in df.columns:
+        df = df.sort_values('meteors').groupby(df['date'].dt.strftime('%B')).tail(n)
+    elif 'avg mets per station' in df.columns:
+        df = df.sort_values('avg mets per station').groupby(df['date'].dt.strftime('%B')).tail(n)
+        df = df[['date','avg mets per station']]
+    else:
+        print('error')
+        exit
+    
+    df.sort_values('date', inplace=True)
+    df['date'] = df['date'].dt.strftime('%d %B')
+
+    print(df)
+
+
 def create_monthly_graph(csv, style = 'seaborn-deep', year='all times'):
     """Creates a graph with monthly meteor detections"""
     # Lectura y acondicionamiento de datos con Pandas
