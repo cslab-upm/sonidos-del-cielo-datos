@@ -176,8 +176,8 @@ def create_monthly_graph(csv, style = 'seaborn-deep', year='all times'):
     plt.ylabel("Nº meteoros")
 
     if 'imo' in csv.path:
-        plt.title("Detecciones diarias - IMO - " + year)
+        plt.title("Detecciones mensuales - IMO - " + year)
         plt.savefig('results\graphs\imo_gráfico_deteccionesmensuales_' + year + '.png', dpi=75)
     else:
-        plt.title("Detecciones diarias - Sonidos del Cielo - " + year)
+        plt.title("Detecciones mensuales - Sonidos del Cielo - " + year)
         plt.savefig('results\graphs\sdc_gráfico_deteccionesmensuales_' + year + '.png', dpi=75)
