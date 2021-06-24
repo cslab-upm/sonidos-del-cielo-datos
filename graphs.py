@@ -68,7 +68,25 @@ def test_sdc_monthly_2020():
     ml.plt.clf()
 
 def test_sdc_hourly():
+    ml.create_hourly_month(sdc_hourly_month, '03/2019')
+    ml.plt.clf()
+    ml.create_hourly_month(sdc_hourly_month, '04/2019')
+    ml.plt.clf()
+    ml.create_hourly_month(sdc_hourly_month, '05/2019')
+    ml.plt.clf()
+    ml.create_hourly_month(sdc_hourly_month, '06/2019')
+    ml.plt.clf()
+    ml.create_hourly_month(sdc_hourly_month, '07/2019')
+    ml.plt.clf()
+    ml.create_hourly_month(sdc_hourly_month, '08/2019')
+    ml.plt.clf()
     ml.create_hourly_month(sdc_hourly_month, '09/2019')
+    ml.plt.clf()
+    ml.create_hourly_month(sdc_hourly_month, '10/2019')
+    ml.plt.clf()
+    ml.create_hourly_month(sdc_hourly_month, '11/2019')
+    ml.plt.clf()
+    ml.create_hourly_month(sdc_hourly_month, '12/2019')
     ml.plt.clf()
 
 if __name__ == '__main__':
