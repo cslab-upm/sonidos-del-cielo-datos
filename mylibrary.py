@@ -181,3 +181,16 @@ def create_monthly_graph(csv, style = 'seaborn-deep', year='all times'):
     else:
         plt.title("Detecciones mensuales - Sonidos del Cielo - " + year)
         plt.savefig('results\graphs\sdc_gráfico_deteccionesmensuales_' + year + '.png', dpi=75)
+
+def create_hourly_month(csv, month,style = 'seaborn-deep'):
+    """Creates a graph with mean meteor detections by hour in month"""
+
+    # Open and read through data
+    data = pd.read_csv(csv.path, sep=';', index_col='date')
+    
+    # Plot the data
+    plt.plot(data.columns, data.loc[month])
+    plt.xlabel("Hora")
+    plt.ylabel("Nº meteoros")
+    plt.title("Media de detecciones por hora Sonidos del Cielo - " + month)
+    plt.savefig('results\graphs\sdc_horario_' + month[0:2] + '_' + month[3:] + '.png', dpi=75)

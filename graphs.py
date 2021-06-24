@@ -5,6 +5,7 @@ sdc = ml.Metspd_csv(name='sdc_clear_daily')
 imo = ml.Metspd_csv(name='imo_meteors_average', mets_col_name='avg mets per station')
 sdc_monthly = ml.Metspd_csv('sdc_meteors_monthly')
 imo_monthly = ml.Metspd_csv(name='imo_meteors_average_monthly', mets_col_name='avg mets per station')
+sdc_hourly_month = ml.Metspd_csv(name='sdc_monthly_hours')
 
 def test_sdc_alltimes():
     ml.create_metspd_graph(sdc)
@@ -66,6 +67,10 @@ def test_sdc_monthly_2020():
     ml.create_monthly_graph(sdc_monthly,year='2020')
     ml.plt.clf()
 
+def test_sdc_hourly():
+    ml.create_hourly_month(sdc_hourly_month, '09/2019')
+    ml.plt.clf()
+
 if __name__ == '__main__':
     test_sdc_alltimes()
     test_sdc_2019()
@@ -82,3 +87,4 @@ if __name__ == '__main__':
     test_imo_monthly_2020()
     test_sdc_monthly_2019()
     test_sdc_monthly_2020()
+    test_sdc_hourly()
