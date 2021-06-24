@@ -1,6 +1,7 @@
 # Totales por hora y día csv Fuenlabrada Daily
 
 import pandas as pd
+import numpy as np
 
 df = pd.read_csv('data\sdc_daily.csv', sep=';')
 
@@ -78,6 +79,12 @@ df_mod['20'] = df['Total.20'] - df['fakes.20']
 df_mod['21'] = df['Total.21'] - df['fakes.21']
 df_mod['22'] = df['Total.22'] - df['fakes.22']
 df_mod['23'] = df['Total.23'] - df['fakes.23']
+
+# Eliminar filas vacías
+df_mod.dropna(inplace=True)
+
+# Sustituir 0s por NaN
+df_mod = df_mod.replace(0, np.NaN)
 
 df_mod.to_csv('results\csvs\sdc_daily_hours.csv', index=False, sep=';')
 
