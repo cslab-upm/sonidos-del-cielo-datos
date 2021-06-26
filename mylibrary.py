@@ -194,3 +194,32 @@ def create_hourly_month(csv, month,style = 'seaborn-deep'):
     plt.ylabel("Nº meteoros")
     plt.title("Media de detecciones por hora Sonidos del Cielo - " + month)
     plt.savefig('results\graphs\sdc_horario_' + month[0:2] + '_' + month[3:] + '.png', dpi=75)
+
+def create_comp_hourly(csv, year, style = 'seaborn-deep'):
+    """Creates a graph with mean meteor detections by hour in all the months of year"""
+    # Open and read through data
+    data = pd.read_csv(csv.path, sep=';')
+    data['date'] = pd.to_datetime(data['date']) #convierte str a formato date
+    data.sort_values('date', inplace=True) #ordena los datos por fecha
+    # Filter by year
+    start_date = year + '-01-01'
+    end_date = year + '-12-31'
+    after_start_date = data['date'] >= start_date
+    before_end_date = data['date'] <= end_date
+    between_two_dates = after_start_date & before_end_date
+    df = data.loc[between_two_dates]
+    df.set_index('date', inplace = True)
+    df.index = df.index.strftime('%B')
+
+    # Plot data
+    labels = list()
+    i = 0
+    for ind in df.index:
+        labels.append(ind)
+        plt.plot(df.columns, df.loc[ind], label = labels[i])
+        i = i + 1
+    plt.xlabel("Hora")
+    plt.ylabel("Nº meteoros")
+    plt.title("Comparativa detecciones por hora (media mensual) Sonidos del Cielo - " + year)
+    plt.legend()
+    plt.savefig('results\graphs\sdc_horario_' + year + '.png', dpi=75)

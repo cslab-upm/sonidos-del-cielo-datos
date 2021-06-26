@@ -89,6 +89,12 @@ def test_sdc_hourly():
     ml.create_hourly_month(sdc_hourly_month, '12/2019')
     ml.plt.clf()
 
+def test_sdc_comp_hourly():
+    ml.create_comp_hourly(sdc_hourly_month, '2019')
+    ml.plt.clf()
+    ml.create_comp_hourly(sdc_hourly_month, '2020')
+    ml.plt.clf()
+
 if __name__ == '__main__':
     test_sdc_alltimes()
     test_sdc_2019()
@@ -106,3 +112,4 @@ if __name__ == '__main__':
     test_sdc_monthly_2019()
     test_sdc_monthly_2020()
     test_sdc_hourly()
+    test_sdc_comp_hourly()
