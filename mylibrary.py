@@ -66,6 +66,30 @@ def create_metspd_graph(csv, style = 'seaborn-deep', year='all times'):
         plt.title("Detecciones diarias - Sonidos del Cielo - " + year)
         plt.savefig('results\graphs\sdc_gráfico_deteccionesdiarias_' + year + '.png', dpi=75)
 
+def create_metspd_vs_showers(csv_original, csv_showers, year, style = 'seaborn-deep'):
+    """Creates a graph showing daily meteor detections and showers"""
+
+    # Lectura de datos
+    dates_or, mets_or = read_mets_data(csv_original, year)
+    dates_sh, mets_sh = read_mets_data(csv_showers, year)
+
+    # Características del gráfico
+    plt.style.use(style)
+    plt.plot_date(dates_or, mets_or, linestyle='solid', marker= 'None', label='')
+    plt.plot_date(dates_sh, mets_sh, linestyle='', marker= 'o', label='Max day of showers', color='r')
+    plt.gcf().set_size_inches(17, 8) #tamaño de la figura
+
+    # Formateo de las fechas
+    plt.gcf().autofmt_xdate() #rota fechas para mejor visualización
+    date_format = mpl_dates.DateFormatter('%d/%m/%Y') #fechas en formato DD/MM/YYYY
+    plt.gca().xaxis.set_major_formatter(date_format)
+    plt.gca().xaxis.set_major_locator(mpl_dates.MonthLocator(interval=1)) #1 fecha al mes
+
+    # Etiquetas y exportar
+    plt.xlabel("Fechas")
+    plt.ylabel("Nº meteoros")
+    plt.title("Detecciones diarias y lluvias - Sonidos del Cielo - " + year)
+    plt.savefig('results\graphs\sdc_diario_vs_lluvias_' + year + '.png', dpi=75)
 
 def create_comparative_graph(csv1, csv2, style = 'seaborn-deep', title='Detecciones diarias - Sonidos del Cielo vs IMO', year='all times'):
     """creates a graph comparing daily meteor detections from two sources"""
