@@ -3,27 +3,26 @@
 import datetime
 import pandas as pd
 
-def only_showers_csv(year):
-    # Rutas
-    cal_path = 'data\cal_' + year + '.txt'
-    results_path = 'results\csvs\sdc_showers_' + year + '.csv'
-
-    # Abrir y leer calendario de lluvias y detecciones diarias
-    cal = pd.read_csv(cal_path, squeeze=True)
-    cal = pd.to_datetime(cal, format='%d/%m/%Y')
-    df = pd.read_csv('results\csvs\sdc_clear_daily.csv')
+def showers_csv(cal_path, daily_path, year):
+    # Open files
+    cal = pd.read_csv(cal_path, sep=';')
+    cal = cal[['Maximo']]
+    cal = pd.to_datetime(cal['Maximo'], format='%d/%m/%Y')
+    df = pd.read_csv(daily_path)
     df['date'] = pd.to_datetime(df['date'])
 
-    # Convertir el txt con las lluvias a lista
+    # Create a list of the showers max date
     showers = list()
-    for ind in cal.index:
-        showers.append(cal[ind])
+    for date in cal:
+        showers.append(date)
 
-    # Filtrar
+    # Filter daily to leave rows with shower max date
     filt = df['date'].isin(showers)
     df = df.loc[filt]
 
-    # Exportar
-    df.to_csv(results_path, index=False)
+    # Export
+    df.to_csv('results\csvs\sdc_showers_' + year + '.csv', index=False)
 
-only_showers_csv('2019')
+
+showers_csv('data\cal2019.csv', 'results\csvs\sdc_clear_daily.csv', '2019')
+showers_csv('data\cal2020.csv', 'results\csvs\sdc_clear_daily.csv', '2020')

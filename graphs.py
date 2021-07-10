@@ -7,6 +7,7 @@ sdc_monthly = ml.Metspd_csv('sdc_meteors_monthly')
 imo_monthly = ml.Metspd_csv(name='imo_meteors_average_monthly', mets_col_name='avg mets per station')
 sdc_hourly_month = ml.Metspd_csv(name='sdc_monthly_hours')
 showers_2019 = ml.Metspd_csv(name='sdc_showers_2019')
+showers_2020 = ml.Metspd_csv(name='sdc_showers_2020')
 
 def test_sdc_alltimes():
     ml.create_metspd_graph(sdc)
@@ -122,6 +123,8 @@ def test_sdc_comp_hourly():
 
 def test_sdc_showers():
     ml.create_metspd_vs_showers(sdc, showers_2019, '2019')
+    ml.plt.clf()
+    ml.create_metspd_vs_showers(sdc, showers_2020, '2020')
     ml.plt.clf()
 
 if __name__ == '__main__':
