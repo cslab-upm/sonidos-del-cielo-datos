@@ -18,20 +18,18 @@ def get_user_input():
 def folder_structure(results_dir, year):
     """Changes working directory and creates the whole folders structure where the files are going to be saved"""
     os.chdir(results_dir)
-    data_dir = results_dir + '\informe_' + year + '\datos'
     temp_dir = results_dir + '\informe_' + year + '\\temp'
     results_dir = results_dir + '\informe_' + year + '\\resultados'
     imo_res_path = results_dir + '\IMO'
     diario_path = results_dir + '\diario'
     lluvias_path = results_dir + '\lluvias'
     curvas_horarias_path = results_dir + '\curvas_horarias'
-    os.makedirs(data_dir)
     os.makedirs(temp_dir)
     os.makedirs(imo_res_path)
     os.makedirs(diario_path)
     os.makedirs(lluvias_path)
     os.makedirs(curvas_horarias_path)
-    return results_dir, data_dir, imo_res_path, diario_path, lluvias_path, curvas_horarias_path, temp_dir
+    return results_dir, imo_res_path, diario_path, lluvias_path, curvas_horarias_path, temp_dir
 
 def mod_sdc_daily(daily_path, results_dir, sh_cal = None):
     """Cleans the daily file and creates modified daily and temp files"""
@@ -81,6 +79,14 @@ def mod_sdc_daily(daily_path, results_dir, sh_cal = None):
         year = date[-4:]
         df['date'][ind] = ("%s-%s-%s" %(day, month, year))
     df['date'] = pd.to_datetime(df['date'], format='%d-%m-%Y')
+    # Include missing days with meteor detection value = 0
+    ind = pd.date_range(min(df['date']), max(df['date'])) # series with whole date range
+    df.set_index('date', inplace=True)
+    df = df[~df.index.duplicated()] # drop duplicates
+    df = df.reindex(ind, fill_value=0) # fill in empty dates with 0s
+    df = df.drop('Date', axis='columns')
+    df.index = df.index.set_names(['date'])
+    df = df.reset_index()
     # Modified dataframe
     columns = ['date','00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','total']
     df_mod = pd.DataFrame(columns=columns)
@@ -259,7 +265,7 @@ def mod_imo_avg(imo_data_path, temp_path, sh_cal):
     # Export
     df.to_csv(temp_path + '\imo_showers.csv', index=False)
 
-def graph_comp_imo(results_dir, temp_dir, diario_path, imo_results_path, year):
+def graph_comp_imo(results_dir, temp_dir, imo_results_path, year):
     """Creates yearly graph comparing daily meteor detections of IMO and SdC"""
     # Read data with Pandas
     sdc_data = pd.read_csv(results_dir + '\sdc_mod_daily.csv', sep=';')
@@ -282,34 +288,26 @@ def graph_comp_imo(results_dir, temp_dir, diario_path, imo_results_path, year):
     imo_dates = imo_data['date']
     imo_meteors = imo_data['avg mets per station']
     # Style plot
+    plt.clf()
     plt.style.use('seaborn-deep')
-    plt.plot_date(sdc_dates, sdc_meteors, linestyle='solid', marker='None', label='Sonidos del Cielo')
-    plt.plot_date(imo_dates, imo_meteors, linestyle='solid', marker='None', label='IMO')
+    ax1 = plt.gca()
+    ax1.plot(sdc_dates, sdc_meteors, linestyle='solid', marker='None', label='Sonidos del Cielo', color='b')
+    ax1.set_xlabel('Fecha')
+    ax1.set_ylabel('Nº meteoros SdC')
+    ax1.set_title('Detecciones diarias - Sonidos del Cielo vs IMO - ' + year)
+    ax2 = ax1.twinx()
+    ax2.plot(imo_dates, imo_meteors, linestyle='solid', marker='None', label='IMO', color='g')
+    ax2.set_ylabel('Nº meteoros IMO')
+    ax1.legend(loc=(0.1, 0.5))
+    ax2.legend(loc=(0.1, 0.4))
     plt.gcf().set_size_inches(17, 8)
     plt.gcf().autofmt_xdate() #rotates dates
     date_format = mpl_dates.DateFormatter('%d/%m/%Y') #date format DD/MM/YYYY
     plt.gca().xaxis.set_major_formatter(date_format)
     plt.gca().xaxis.set_major_locator(mpl_dates.MonthLocator(interval=1)) #1 day/month
-    plt.xlabel('Fechas')
-    plt.ylabel('Nº meteoros')
     plt.legend()
-    plt.title('Detecciones diarias - Sonidos del Cielo vs IMO - ' + year)
+    plt.gcf().tight_layout()
     plt.savefig(imo_results_path + '\SdC_vs_IMO_' + year + '.png', dpi=75)
-    # Showers
-    # Read data
-    showers_sdc = pd.read_csv(temp_dir + '\sdc_showers_daily.csv')
-    showers_sdc['date'] = pd.to_datetime(showers_sdc['date'])
-    dates_sh_sdc = showers_sdc['date']
-    meteors_sh_sdc = showers_sdc['total']
-    showers_imo = pd.read_csv(temp_dir + '\imo_showers.csv')
-    showers_imo['date'] = pd.to_datetime(showers_imo['date'])
-    dates_sh_imo = showers_imo['date']
-    meteors_sh_imo = showers_imo['avg mets per station']
-    plt.plot_date(dates_sh_imo, meteors_sh_imo, linestyle='', marker= 'o', label='Max day of showers - IMO', color='m')
-    plt.plot_date(dates_sh_sdc, meteors_sh_sdc, linestyle='', marker= 'o', label='Max day of showers - SdC', color='r')
-    plt.legend()
-    plt.title("Detecciones diarias y lluvias - Sonidos del Cielo vs IMO - " + year)
-    plt.savefig(diario_path + '\SdC_vs_IMO_' + year + '_lluvias.png', dpi=75)
 
 def graph_sdc_hours(curvas_horarias_path, temp_dir, year):
     """Graphs mean meteor detections for each month by hour"""
@@ -319,7 +317,7 @@ def graph_sdc_hours(curvas_horarias_path, temp_dir, year):
     data = data.set_index('date')
     data = data.loc[ : , data.columns != 'total']
     for month in data.index:
-        if month[3:] == '2019':
+        if month[3:] == year:
             plt.clf()
             plt.style.use('seaborn-deep')
             plt.plot(data.columns, data.loc[month])
@@ -330,7 +328,7 @@ def graph_sdc_hours(curvas_horarias_path, temp_dir, year):
     # Plot comparative
     plt.style.use('seaborn-deep')
     for month in data.index:
-        if month[3:] == '2019':
+        if month[3:] == year:
             plt.plot(data.columns, data.loc[month], label=month)
     plt.xlabel('Hora')
     plt.ylabel('Nº meteoros')
@@ -338,13 +336,47 @@ def graph_sdc_hours(curvas_horarias_path, temp_dir, year):
     plt.legend()
     plt.savefig(curvas_horarias_path + '\SdC_CurvasHorarias_' + year + '.png', dpi=75)
 
+def graph_showers(res_path, shRes_path, sh_cal, year):
+    """Graphs daily detections of each shower"""
+    # Read showers data
+    sh_data = pd.read_csv(sh_cal, sep = ';', index_col = 'Lluvia')
+    sh_data['Inicio de actividad'] = pd.to_datetime(sh_data['Inicio de actividad'], format='%d/%m/%Y')
+    sh_data['Fin de actividad'] = pd.to_datetime(sh_data['Fin de actividad'], format='%d/%m/%Y')
+    # Iterate through showers
+    for shower in sh_data.index:
+        plt.clf()
+        # Read met detections csv
+        df = pd.read_csv(res_path + '\sdc_mod_daily.csv', sep = ';')
+        df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
+        # Filter dates
+        start_date = sh_data.loc[shower, 'Inicio de actividad']
+        end_date = sh_data.loc[shower, 'Fin de actividad']
+        after_start_date = df['date'] >= start_date
+        before_end_date = df['date'] <= end_date
+        between_two_dates = after_start_date & before_end_date
+        df = df.loc[between_two_dates]
+        if not df.empty:
+            # Plot
+            plt.style.use('seaborn-deep')
+            plt.plot_date(df['date'], df['total'], linestyle='solid', marker='None')
+            plt.gcf().set_size_inches(17, 8)
+            date_format = mpl_dates.DateFormatter('%d/%m/%Y') #date format DD/MM/YYYY
+            plt.gca().xaxis.set_major_formatter(date_format)
+            plt.gca().xaxis.set_minor_locator(mpl_dates.DayLocator())
+            plt.gcf().autofmt_xdate() #rotates dates
+            plt.xlabel('Fechas')
+            plt.ylabel('Nº meteoros')
+            plt.title(shower + ' - ' + year)
+            plt.savefig(shRes_path + '\SdC_' + sh_data.loc[shower, 'Abreviatura'] + '_' + year + '.png', dpi=75)
+
 def run_software():
     year, results_dir, sdc_data_path, imo_data_path, cal_path = get_user_input()
-    results_dir, data_dir, imo_res_path, diario_path, lluvias_path, curvas_horarias_path, temp_dir = folder_structure(results_dir, year)
+    results_dir, imo_res_path, diario_path, lluvias_path, curvas_horarias_path, temp_dir = folder_structure(results_dir, year)
     mod_sdc_daily(sdc_data_path, results_dir, cal_path)
     graph_sdc_daily(results_dir, diario_path, year)
     mod_imo_avg(imo_data_path, temp_dir, cal_path)
-    graph_comp_imo(results_dir, temp_dir, diario_path, imo_res_path, year)
+    graph_comp_imo(results_dir, temp_dir, imo_res_path, year)
     graph_sdc_hours(curvas_horarias_path, temp_dir, year)
+    graph_showers(results_dir, lluvias_path, cal_path, year)
 
 run_software()
