@@ -1,48 +1,64 @@
 import os
-import json
 from datetime import datetime
 import paho.mqtt.client as mqtt
 import pandas as pd
+import mysql.connector
+from sqlalchemy import create_engine
 
+# Connecct to MQTT server
 MQTT_HOST = 'vps190.cesvima.upm.es'
 MQTT_PORT = 1883
 
 MQTT_TOPIC_STATIONS = "station/echoes/#"
 MQTT_TOPIC_SERVER_UP = "server/status/up"
 
-def on_station_message(client, userdata, msg):
-	mensaje = json.loads(str(msg.payload.decode("utf-8")))
-        
+# Connect to MySQL database
+db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    passwd="1234",
+    database="Sonidos_del_Cielo"
+    )
+mycursor = db.cursor()
+
+# Define functions        
 def on_message(client, userdata, message):
-	msg = str(message.payload.decode("utf-8"))
-	pos = msg.rfind("event_id")
-	date = msg[pos + 12 : pos + 16] + '-' + msg[pos + 16 : pos + 18] + '-' + msg[pos + 18 : pos + 20]
-	time = msg[pos + 20 : pos + 22] + ':' + msg[pos + 22 : pos + 24]
-	print('\n\nDate: %s\nTime: %s\n\n' % (date, time))
-	hour = msg[pos + 20 : pos + 22]
-	df = pd.read_csv('mqtt_daily.csv', sep=';', index_col='date')
-	print(df)
-	if date in df.index.values:
-		print ('date exists')
-		df.index = pd.to_datetime(df.index)
-		date = pd.to_datetime(date, format='%Y-%m-%d')
-		df.loc[date, hour] = df.loc[date, hour] + 1
-		df.loc[date, 'total'] = df.loc[date, 'total'] + 1
+	# Import mysql data to pandas dataframe
+	df = pd.read_sql("SELECT * from daily", db, index_col = 'date')
+	# Get current datetime
+	date = datetime.now().date()
+	time = datetime.now().time()
+	# Modify row if date has already been added
+	if str(date) in df.index.values:
+		print('date exists')
+		if len(str(time.hour)) == 1:
+			df.loc[str(date), '0' + str(time.hour) + 'H'] = df.loc[str(date), '0' + str(time.hour) + 'H'] + 1
+		else:
+			df.loc[str(date), str(time.hour) + 'H'] = df.loc[str(date), str(time.hour) + 'H'] + 1
+		df.loc[str(date), 'total'] = df.loc[str(date), 'total'] + 1
+		df = df.reset_index()
 		print(df)
-		df.to_csv('mqtt_daily.csv', index=True, sep=';')
+	# Add new row with date
 	else:
 		print('new date')
 		# reset index on data
 		df = df.reset_index()
 		# create new row
-		new_row = {'date':date, '00':0, '01':0, '02':0, '03':0, '04':0, '05':0, '06':0, '07':0, '08':0, '09':0, '10':0, '11':0, '12':0,
-					'13':0, '14':0, '15':0, '16':0, '17':0, '18':0, '19':0, '20':0, '21':0, '22':0, '23':0, 'total':1}
-		new_row[hour] = 1
+		new_row = {'date':str(date), '00H':0, '01H':0, '02H':0, '03H':0, '04H':0, '05H':0, '06H':0, '07H':0, '08H':0, '09H':0, '10H':0, '11H':0,
+			'12H':0, '13H':0, '14H':0, '15H':0, '16H':0, '17H':0, '18H':0, '19H':0, '20H':0, '21H':0, '22H':0, '23H':0, 'total':1}
+		if len(str(time.hour)) == 1:
+			new_row['0' + str(time.hour) + 'H'] = 1
+		else:
+			new_row[str(time.hour) + 'H'] = 1
 		# append new row to df
 		df = df.append(new_row, ignore_index=True)
-		# print out final dataframe
 		print(df)
-		df.to_csv('mqtt_daily.csv', index=False, sep=';')
+	# Empty old table
+	mycursor.execute("TRUNCATE daily")
+	# Export dataframe to table
+	engine = create_engine("mysql://root:1234@localhost/Sonidos_del_Cielo")
+	con = engine.connect()
+	df.to_sql('daily', con, if_exists='replace', index=False)
 
 def serverUp():
 	mqtt_client = mqtt.Client()
@@ -51,6 +67,7 @@ def serverUp():
 	mqtt_client.publish(MQTT_TOPIC_SERVER_UP, True)
 	mqtt_client.loop_stop()
 
+# Start MQTT
 mqtt_client = mqtt.Client()
 mqtt_client.on_message = on_message
 mqtt_client.connect(MQTT_HOST, MQTT_PORT, 60)
