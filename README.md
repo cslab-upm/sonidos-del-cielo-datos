@@ -6,7 +6,7 @@ Contiene dos programas para analizar los datos del proyecto Sonidos del Cielo, u
 * Módulo Matplotlib
 * ...
 
-## analisis_datos.py
+## generador_informes.py
 Herramienta diseñada con el objetivo de ser ejecutada periódicamente y obtener informes anuales sobre las detecciones de meteoros realizadas en el último año.
 ### Uso
 1. Ejecutar analisis_datos.py
@@ -18,7 +18,7 @@ Herramienta diseñada con el objetivo de ser ejecutada periódicamente y obtener
 * Ruta del archivo con el calendario de lluvias del año correspondiente
 3. El informe obtenido es una estructura de carpetas con las imágenes resultantes de graficar los datos aportados.
 
-## mqtt.py
+## monitorizacion_live.py
 Herramienta para la monitorización de las detecciones de meteoros realizadas en directo mientras el programa está en marcha.
 El programa se conecta a una base de datos MySQL que se actualiza cada vez que se escucha un meteoro mediante un cliente MQTT.
 Los resultados de esta monitorización se pueden observar en un dashboard dinámico hecho con Grafana en localhost:3000
