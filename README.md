@@ -4,7 +4,11 @@ Contiene dos programas para analizar los datos del proyecto Sonidos del Cielo, u
 ## Requisitos previos
 * Python
 * Módulo Matplotlib
-* ...
+* Módulo Pandas
+* Módulo paho.mqtt.client
+* Módulo mysql.connector
+* Módulo sqlalchemy
+* Módulo Numpy
 
 ## generador_informes.py
 Herramienta diseñada con el objetivo de ser ejecutada periódicamente y obtener informes anuales sobre las detecciones de meteoros realizadas en el último año.
