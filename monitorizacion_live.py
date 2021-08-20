@@ -5,7 +5,11 @@ import pandas as pd
 import mysql.connector
 from sqlalchemy import create_engine
 
-# Connecct to MQTT server
+# Welcome
+print("\n\t ********* ANÁLISIS DE DATOS DE CONTADORES DE ESTRELLAS - MONITORIZACIÓN EN VIVO *********")
+print("\nEsperando meteoros...")
+
+# Connect to MQTT server
 MQTT_HOST = 'vps190.cesvima.upm.es'
 MQTT_PORT = 1883
 
@@ -23,6 +27,7 @@ mycursor = db.cursor()
 
 # Define functions        
 def on_message(client, userdata, message):
+	print("\nMETEORO DETECTADO\n")
 	# Import mysql data to pandas dataframe
 	df = pd.read_sql("SELECT * from daily", db, index_col = 'date')
 	# Get current datetime
@@ -30,14 +35,13 @@ def on_message(client, userdata, message):
 	time = datetime.now().time()
 	# Modify row if date has already been added
 	if str(date) in df.index.values:
-		print('date exists')
 		if len(str(time.hour)) == 1:
 			df.loc[str(date), '0' + str(time.hour) + 'H'] = df.loc[str(date), '0' + str(time.hour) + 'H'] + 1
 		else:
 			df.loc[str(date), str(time.hour) + 'H'] = df.loc[str(date), str(time.hour) + 'H'] + 1
 		df.loc[str(date), 'total'] = df.loc[str(date), 'total'] + 1
 		df = df.reset_index()
-		print(df)
+		print('\nBase de datos actualizada:\n', df)
 	# Add new row with date
 	else:
 		print('new date')
@@ -52,20 +56,14 @@ def on_message(client, userdata, message):
 			new_row[str(time.hour) + 'H'] = 1
 		# append new row to df
 		df = df.append(new_row, ignore_index=True)
-		print(df)
+		print('\nBase de datos actualizada:\n', df)
 	# Empty old table
 	mycursor.execute("TRUNCATE daily")
 	# Export dataframe to table
 	engine = create_engine("mysql://root:1234@localhost/Sonidos_del_Cielo")
 	con = engine.connect()
 	df.to_sql('daily', con, if_exists='replace', index=False)
-
-def serverUp():
-	mqtt_client = mqtt.Client()
-	mqtt_client.connect(MQTT_HOST, MQTT_PORT, 60)
-	mqtt_client.loop_start()
-	mqtt_client.publish(MQTT_TOPIC_SERVER_UP, True)
-	mqtt_client.loop_stop()
+	print("\nEsperando meteoros...")
 
 # Start MQTT
 mqtt_client = mqtt.Client()

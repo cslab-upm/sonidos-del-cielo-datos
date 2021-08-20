@@ -6,6 +6,10 @@ from matplotlib import dates as mpl_dates
 import pandas as pd
 import numpy as np
 
+# Suppress warnings
+import warnings
+warnings.filterwarnings("ignore")
+
 def get_user_input():
     """Asks the user for the necessesary information and returns it"""
     year = input('Year >>>')
@@ -369,8 +373,14 @@ def graph_showers(res_path, shRes_path, sh_cal, year):
             plt.title(shower + ' - ' + year)
             plt.savefig(shRes_path + '\SdC_' + sh_data.loc[shower, 'Abreviatura'] + '_' + year + '.png', dpi=75)
 
+def welcome():
+    print("\n\t ********* ANÁLISIS DE DATOS DE CONTADORES DE ESTRELLAS - GENERADOR DE INFORMES *********")
+    print("\nIntroduzca la información del análisis a realizar:\n")
+
 def run_software():
+    welcome()
     year, results_dir, sdc_data_path, imo_data_path, cal_path = get_user_input()
+    print("\nProcesando...\n")
     results_dir, imo_res_path, diario_path, lluvias_path, curvas_horarias_path, temp_dir = folder_structure(results_dir, year)
     mod_sdc_daily(sdc_data_path, results_dir, cal_path)
     graph_sdc_daily(results_dir, diario_path, year)
@@ -378,5 +388,6 @@ def run_software():
     graph_comp_imo(results_dir, temp_dir, imo_res_path, year)
     graph_sdc_hours(curvas_horarias_path, temp_dir, year)
     graph_showers(results_dir, lluvias_path, cal_path, year)
+    print("\nAnálisis completado, compruebe la ruta ", results_dir, " para ver los resultados\n")
 
 run_software()
