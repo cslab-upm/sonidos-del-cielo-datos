@@ -1,6 +1,7 @@
 """Software tool to analyze data from Sonidos del Cielo / Contadores de Estrellas"""
 
 import os
+import shutil
 from matplotlib import pyplot as plt
 from matplotlib import dates as mpl_dates
 import pandas as pd
@@ -12,18 +13,18 @@ warnings.filterwarnings("ignore")
 
 def get_user_input():
     """Asks the user for the necessesary information and returns it"""
-    year = input('Year >>>')
-    results_dir = input('Results path >>>')
-    sdc_data_path = input('Daily path >>>')
-    imo_data_path = input('IMO data path >>>')
-    cal_path = input('Shower calendar path %s >>>' %year)
+    year = input('Año >>> ')
+    results_dir = input('Ruta para guardar los resultados >>> ')
+    sdc_data_path = input('Ruta del daily >>> ')
+    imo_data_path = input('Ruta de los datos de la IMO >>> ')
+    cal_path = input('Ruta del calendario de lluvias %s >>> ' %year)
     return year, results_dir, sdc_data_path, imo_data_path, cal_path
 
 def folder_structure(results_dir, year):
     """Changes working directory and creates the whole folders structure where the files are going to be saved"""
     os.chdir(results_dir)
     temp_dir = results_dir + '\informe_' + year + '\\temp'
-    results_dir = results_dir + '\informe_' + year + '\\resultados'
+    results_dir = results_dir + '\informe_' + year
     imo_res_path = results_dir + '\IMO'
     diario_path = results_dir + '\diario'
     lluvias_path = results_dir + '\lluvias'
@@ -127,7 +128,7 @@ def mod_sdc_daily(daily_path, results_dir, sh_cal = None):
     df_month.index = pd.to_datetime(df_month['date'])
     df_month = df_month.groupby(pd.Grouper(freq='M')).mean()
     df_month.index = df_month.index.strftime('%m/%Y')
-    df_month.to_csv(results_dir + '\..\\temp\sdc_mod_monthly.csv', sep=';')
+    df_month.to_csv(results_dir + '\\temp\sdc_mod_monthly.csv', sep=';')
     # Replace NaN with 0s
     df_mod = df_mod.fillna(0)
     # Export
@@ -145,7 +146,7 @@ def mod_sdc_daily(daily_path, results_dir, sh_cal = None):
     filt = df_mod['date'].isin(showers)
     df_mod = df_mod.loc[filt]
     # Export
-    df_mod.to_csv(results_dir + '\..\\temp\sdc_showers_daily.csv', index=False)
+    df_mod.to_csv(results_dir + '\\temp\sdc_showers_daily.csv', index=False)
 
 def graph_sdc_daily(results_dir, diario_path, year):
     """Creates the yearly graph with daily detections, comparing to prev year and with showers"""
@@ -202,12 +203,13 @@ def graph_sdc_daily(results_dir, diario_path, year):
     plt.xlabel('Fechas')
     plt.ylabel('Nº meteoros')
     plt.title('Detecciones diarias - Sonidos del Cielo - ' + year + ' vs ' + yr)
-    plt.plot_date(dates_yr, meteors, linestyle='solid', marker='None')
-    plt.plot_date(dates_prev, meteors_prev, linestyle='solid', marker='None')
+    plt.plot_date(dates_yr, meteors, linestyle='solid', marker='None', label=year)
+    plt.plot_date(dates_prev, meteors_prev, linestyle='solid', marker='None', label= str(int(year) - 1))
+    plt.legend()
     plt.savefig(diario_path + '\SdC_' + year + '_vs_' + yr + '.png', dpi=75)
     # Showers
     plt.clf()
-    showers = pd.read_csv(results_dir + '\..\\temp\sdc_showers_daily.csv')
+    showers = pd.read_csv(results_dir + '\\temp\sdc_showers_daily.csv')
     showers['date'] = pd.to_datetime(showers['date'])
     dates_sh = showers['date']
     meteors_sh = showers['total']
@@ -377,6 +379,9 @@ def welcome():
     print("\n\t ********* ANÁLISIS DE DATOS DE CONTADORES DE ESTRELLAS - GENERADOR DE INFORMES *********")
     print("\nIntroduzca la información del análisis a realizar:\n")
 
+def delete_temp(results_dir):
+    shutil.rmtree(results_dir + '\\temp')
+
 def run_software():
     welcome()
     year, results_dir, sdc_data_path, imo_data_path, cal_path = get_user_input()
@@ -388,6 +393,7 @@ def run_software():
     graph_comp_imo(results_dir, temp_dir, imo_res_path, year)
     graph_sdc_hours(curvas_horarias_path, temp_dir, year)
     graph_showers(results_dir, lluvias_path, cal_path, year)
-    print("\nAnálisis completado, compruebe la ruta ", results_dir, " para ver los resultados\n")
+    delete_temp(results_dir)
+    print("\nAnálisis completado, compruebe la ruta", results_dir, "para ver los resultados\n")
 
 run_software()

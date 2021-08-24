@@ -1,3 +1,5 @@
+"""Software tool to monitor data from Sonidos del Cielo / Contadores de Estrellas"""
+
 import os
 from datetime import datetime
 import paho.mqtt.client as mqtt
@@ -44,7 +46,6 @@ def on_message(client, userdata, message):
 		print('\nBase de datos actualizada:\n', df)
 	# Add new row with date
 	else:
-		print('new date')
 		# reset index on data
 		df = df.reset_index()
 		# create new row
